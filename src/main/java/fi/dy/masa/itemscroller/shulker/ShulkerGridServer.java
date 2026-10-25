@@ -86,7 +86,7 @@ public final class ShulkerGridServer
 
         // Never trust a client-provided output or ingredient choice without
         // verifying the complete pattern against the server's recipe registry.
-        ServerLevel level = player.serverLevel();
+        ServerLevel level = (ServerLevel) player.level();
         List<ItemStack> normalized = new ArrayList<>(size);
         boolean hasIngredient = false;
         for (ItemStack item : pattern)
