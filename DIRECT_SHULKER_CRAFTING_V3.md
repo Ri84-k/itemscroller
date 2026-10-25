@@ -13,7 +13,7 @@ This branch does not alter the stable version's branch, and the new mode is OFF 
 - The server checks the exact recipe against its own registry, computes whether **all** ingredient slots can be filled, and transfers matching items **straight from carried shulkers into the crafting grid**, not into ordinary player inventory.
 - Existing compatible grid ingredients are retained. The server refuses to replace unrelated items.
 - If even one full recipe cannot be assembled, the server leaves the shulkers and crafting grid unchanged.
-- Results are checked for an exact match to the saved recipe before the normal vanilla result-slot THROW action is sent. Intended to work with a full inventory.
+- Results are checked for an exact match to the saved recipe before the normal vanilla result-slot THROW action is sent. Up to 16 results are thrown in a bounded batch, never more than the smallest number of remaining ingredients in a required grid slot. Intended to work with a full inventory.
 
 ## Important limitations and safeguards
 

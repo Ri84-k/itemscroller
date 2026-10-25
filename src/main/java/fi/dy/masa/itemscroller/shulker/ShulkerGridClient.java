@@ -105,9 +105,34 @@ public final class ShulkerGridClient
             ItemStack.isSameItemSameComponents(output, recipe.getResult()) &&
             output.getCount() == recipe.getResult().getCount())
         {
-            // THROW is handled by the vanilla crafting result slot on the
-            // server, so no free ordinary inventory slot is required.
-            InventoryUtils.dropStack(gui, outputSlot.index);
+            // Vanilla THROW uses the crafting result slot's onTake logic and
+            // requires no empty player inventory slot.
+            //
+            // Upper bound the number of clicks by the smallest ACTUAL count
+            // currently in any required ingredient slot. Even if the client
+            // hasn't processed the next output update, the burst cannot
+            // outlast the complete grid and craft an intermediate recipe.
+            int safeBurst = Math.min(16, Configs.Generic.MASS_CRAFT_ITERATIONS.getIntegerValue());
+            for (int i = 0; i < count; i++)
+            {
+                if (!pattern[i].isEmpty())
+                {
+                    safeBurst = Math.min(safeBurst,
+                            gui.getMenu().getSlot(range.getFirst() + i).getItem().getCount());
+                }
+            }
+
+            for (int n = 0; n < safeBurst; n++)
+            {
+                ItemStack currentOutput = outputSlot.getItem();
+                if (currentOutput.isEmpty() ||
+                    !ItemStack.isSameItemSameComponents(currentOutput, recipe.getResult()) ||
+                    currentOutput.getCount() != recipe.getResult().getCount())
+                {
+                    break;
+                }
+                InventoryUtils.dropStack(gui, outputSlot.index);
+            }
             return true;
         }
 
