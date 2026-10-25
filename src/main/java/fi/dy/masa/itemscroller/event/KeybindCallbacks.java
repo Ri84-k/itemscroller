@@ -224,7 +224,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                 return;
             }
 
-            InventoryUtils.bufferInvUpdates = true;
+            // Do not buffer vanilla inventory synchronization while awaiting a
+            // shulker refill; otherwise recipe-book clicks may use stale slots.
             final Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
 
             if (outputSlot != null)
@@ -250,6 +251,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         return;
                     }
 
+                    InventoryUtils.bufferInvUpdates = true;
                     if (Configs.Generic.RATE_LIMIT_CLICK_PACKETS.getBooleanValue())
                     {
                         ClickPacketBuffer.setShouldBufferClickPackets(true);
@@ -319,6 +321,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         }
 
         InventoryUtils.dontUpdateRecipeBook = 2;
+        final boolean safeShulkerCraft = Configs.Generic.SHULKER_BOX_ITEM_HANDLING.getBooleanValue();
 
         for (int i = 0; i < limit; i++)
         {
@@ -350,26 +353,41 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 //            InventoryUtils.updateCraftingOutputSlot(outputSlot);
             craftingInv = ((IMixinCraftingResultSlot) outputSlot).itemscroller_getCraftingInventory();
 
-            if (recipe.getVanillaRecipe() != null && recipe.getVanillaRecipe().matches(craftingInv.asCraftInput(), mc.level))
+            final boolean correctOutput = InventoryUtils.areStacksEqual(outputSlot.getItem(), recipe.getResult());
+            final boolean vanillaMatches = recipe.getVanillaRecipe() != null &&
+                    recipe.getVanillaRecipe().matches(craftingInv.asCraftInput(), mc.level);
+
+            // Original behavior is preserved with ShulkerBoxItemHandling OFF.
+            if (!safeShulkerCraft && vanillaMatches)
             {
                 break;
             }
-            else if (!InventoryUtils.areStacksEqual(outputSlot.getItem(), recipe.getResult()))
+            if (!correctOutput)
             {
                 this.badRecipeClicks++;
-
-                if (badLimit > 0)
+                // Never click an intermediate output (for example, wooden slabs
+                // while placing planks for pistons). Wait for the right result.
+                if (safeShulkerCraft || (badLimit > 0 && this.badRecipeClicks > badLimit))
                 {
-                    if (this.badRecipeClicks > badLimit)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
             else
             {
-                // Successful Click, reduce burden.
                 this.badRecipeClicks -= MathUtils.max((badLimit / 8), 1);
+            }
+
+            if (safeShulkerCraft)
+            {
+                if (!correctOutput || (recipe.getVanillaRecipe() != null && !vanillaMatches))
+                {
+                    break;
+                }
+                // One verified quick-move per mass-craft tick. No second
+                // unconditional output click, which could craft a partial recipe
+                // after the selected recipe runs out of an ingredient.
+                InventoryUtils.shiftClickSlot(gui, outputSlot.index);
+                break;
             }
 
             InventoryUtils.shiftClickSlot(gui, outputSlot.index);
@@ -377,7 +395,10 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         }
 
         InventoryUtils.tryClearCursor(gui);
-        InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
+        if (!safeShulkerCraft)
+        {
+            InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
+        }
     }
 
     private void onTickSwapsOnly(Minecraft mc,

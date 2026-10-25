@@ -18,7 +18,6 @@ public final class ShulkerRefillClient
     private static boolean pending;
     private static int pendingTicks;
     private static int cooldown;
-    private static boolean syncPause;
 
     private ShulkerRefillClient() {}
 
@@ -30,8 +29,9 @@ public final class ShulkerRefillClient
             {
                 pending = false;
                 pendingTicks = 0;
-                cooldown = result.moved() > 0 ? 3 : 20;
-                syncPause = result.moved() > 0;
+                // The server broadcasts changed slots before sending this
+                // acknowledgment. No extra post-refill pause is necessary.
+                cooldown = result.moved() > 0 ? 0 : 10;
             });
         });
     }
@@ -54,8 +54,7 @@ public final class ShulkerRefillClient
             {
                 pending = false;
                 pendingTicks = 0;
-                cooldown = 40;
-                syncPause = false;
+                cooldown = 20;
                 return false;
             }
             return true;
@@ -63,9 +62,8 @@ public final class ShulkerRefillClient
         if (cooldown > 0)
         {
             cooldown--;
-            boolean pause = syncPause;
-            if (cooldown == 0) syncPause = false;
-            return pause;
+            // Throttle requests only when no shulker materials were found.
+            return false;
         }
 
         List<ItemStack> needed = new ArrayList<>();
@@ -73,13 +71,29 @@ public final class ShulkerRefillClient
         {
             if (input == null || input.isEmpty()) continue;
             if (needed.stream().anyMatch(item -> ItemStack.isSameItemSameComponents(item, input))) continue;
+
+            int perCraft = 0;
+            for (ItemStack ingredient : recipe.getRecipeItems())
+            {
+                if (ingredient != null && !ingredient.isEmpty() &&
+                        ItemStack.isSameItemSameComponents(ingredient, input))
+                {
+                    perCraft++;
+                }
+            }
+
             int amount = 0;
             for (int i = 0; i < 36; i++)
             {
                 ItemStack loose = mc.player.getInventory().getItem(i);
                 if (ItemStack.isSameItemSameComponents(loose, input)) amount += loose.getCount();
             }
-            if (amount < 16) needed.add(input.copyWithCount(1));
+            // Keep at least four recipes' worth loose, and request enough for
+            // larger batches, rather than refilling each ingredient 1 stack at a time.
+            if (amount < Math.max(8, perCraft * 4))
+            {
+                needed.add(input.copyWithCount(perCraft));
+            }
             if (needed.size() == 9) break;
         }
         if (needed.isEmpty()) return false;

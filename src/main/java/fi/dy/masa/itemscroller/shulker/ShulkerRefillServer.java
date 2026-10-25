@@ -52,6 +52,9 @@ public final class ShulkerRefillServer implements ModInitializer
                 }
             }
             if (alreadySeen) continue;
+            // One representative item per crafting-grid slot, at most 9.
+            int perCraft = wanted.getCount();
+            if (perCraft < 1 || perCraft > 9) continue;
 
             int existing = 0;
             for (int i = 0; i < 36; i++)
@@ -59,9 +62,12 @@ public final class ShulkerRefillServer implements ModInitializer
                 ItemStack stack = player.getInventory().getItem(i);
                 if (ItemStack.isSameItemSameComponents(stack, wanted)) existing += stack.getCount();
             }
-            if (existing >= 16) continue;
+            if (existing >= Math.max(8, perCraft * 4)) continue;
 
-            int toMove = Math.min(64 - existing, wanted.getMaxStackSize());
+            // Prefetch up to 32 recipes of this ingredient, capped to four
+            // stacks; the inventory's actual available space is authoritative.
+            int target = Math.min(256, perCraft * 32);
+            int toMove = Math.max(0, target - existing);
             for (int boxIndex = 0; boxIndex < player.getInventory().getContainerSize() && toMove > 0; boxIndex++)
             {
                 if (boxIndex >= 36 && boxIndex != 40) continue; // Main inventory, hotbar, offhand
