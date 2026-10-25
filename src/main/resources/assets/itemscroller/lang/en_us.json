@@ -195,5 +195,7 @@
     "itemscroller.message.toggled_mod_on": "Toggled all Item Scroller functionality §aON",
     "modmenu.descriptionTranslation.itemscroller": "Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots",
     "itemscroller.config.generic.name.ShulkerBoxItemHandling": "ShulkerBoxItemHandling",
-    "itemscroller.config.generic.comment.ShulkerBoxItemHandling": "When mass crafting, refill materials from shulker boxes in your inventory without opening them. Requires this modified Item Scroller on both client and server, plus Fabric API. Off by default. Does not access nearby chests."
+    "itemscroller.config.generic.comment.ShulkerBoxItemHandling": "When mass crafting, refill materials from shulker boxes in your inventory without opening them. Requires this modified Item Scroller on both client and server, plus Fabric API. Off by default. Does not access nearby chests.",
+    "itemscroller.config.generic.name.directShulkerCrafting": "directShulkerCrafting",
+    "itemscroller.config.generic.comment.directShulkerCrafting": "EXPERIMENTAL (v3). When ShulkerBoxItemHandling is enabled, take materials directly from carried shulker boxes into the crafting grid, without requiring empty player inventory slots. Verify the selected recipe and safely throw its output. Requires the v3 mod on both client and Fabric server. Default: OFF."
 }

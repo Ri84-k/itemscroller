@@ -22,6 +22,7 @@ public final class ShulkerRefillServer implements ModInitializer
     {
         PayloadTypeRegistry.serverboundPlay().register(ShulkerRefillPackets.Request.TYPE, ShulkerRefillPackets.Request.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ShulkerRefillPackets.Result.TYPE, ShulkerRefillPackets.Result.CODEC);
+        ShulkerGridServer.register();
         ServerPlayNetworking.registerGlobalReceiver(ShulkerRefillPackets.Request.TYPE, (request, context) ->
         {
             int moved = refill(context.player(), request.ingredients());

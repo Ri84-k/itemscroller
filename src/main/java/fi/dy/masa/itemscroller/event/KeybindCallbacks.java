@@ -26,6 +26,7 @@ import fi.dy.masa.itemscroller.mixin.recipe.IMixinCraftingResultSlot;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
 import fi.dy.masa.itemscroller.shulker.ShulkerRefillClient;
+import fi.dy.masa.itemscroller.shulker.ShulkerGridClient;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.*;
 
@@ -243,7 +244,17 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                         return;
                     }
 
-                    // Wait for a server-authoritative refill before normal mass-crafting clicks.
+                    // Optional full-inventory mode: the server transfers ingredients
+                    // straight from carried shulkers into the exact crafting grid.
+                    // Never use the vanilla recipe-book fill in this mode.
+                    if (ShulkerGridClient.handleMassCraft(mc, gui, range, outputSlot, recipe))
+                    {
+                        InventoryUtils.bufferInvUpdates = false;
+                        this.massCraftTicker = 0;
+                        return;
+                    }
+
+                    // The original v2 inventory-refill mode remains available.
                     if (ShulkerRefillClient.pauseMassCraft(mc, recipe))
                     {
                         InventoryUtils.bufferInvUpdates = false;

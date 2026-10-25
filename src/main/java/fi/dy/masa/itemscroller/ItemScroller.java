@@ -2,6 +2,7 @@ package fi.dy.masa.itemscroller;
 
 import net.fabricmc.api.ClientModInitializer;
 import fi.dy.masa.itemscroller.shulker.ShulkerRefillClient;
+import fi.dy.masa.itemscroller.shulker.ShulkerGridClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import fi.dy.masa.malilib.event.InitializationHandler;
@@ -16,6 +17,7 @@ public class ItemScroller implements ClientModInitializer
     {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
         ShulkerRefillClient.initialize();
+        ShulkerGridClient.initialize();
     }
 
     public static void debugLog(String key, Object... args)
