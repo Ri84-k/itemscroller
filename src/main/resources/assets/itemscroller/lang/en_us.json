@@ -193,5 +193,7 @@
     "itemscroller.hotkeys.category.hotkeys": "Hotkeys",
     "itemscroller.message.toggled_mod_off": "Toggled all Item Scroller functionality §cOFF",
     "itemscroller.message.toggled_mod_on": "Toggled all Item Scroller functionality §aON",
-    "modmenu.descriptionTranslation.itemscroller": "Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots"
+    "modmenu.descriptionTranslation.itemscroller": "Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots",
+    "itemscroller.config.generic.name.ShulkerBoxItemHandling": "ShulkerBoxItemHandling",
+    "itemscroller.config.generic.comment.ShulkerBoxItemHandling": "When mass crafting, refill materials from shulker boxes in your inventory without opening them. Requires this modified Item Scroller on both client and server, plus Fabric API. Off by default. Does not access nearby chests."
 }

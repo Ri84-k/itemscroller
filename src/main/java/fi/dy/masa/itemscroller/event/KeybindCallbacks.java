@@ -25,6 +25,7 @@ import fi.dy.masa.itemscroller.gui.GuiConfigs;
 import fi.dy.masa.itemscroller.mixin.recipe.IMixinCraftingResultSlot;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
+import fi.dy.masa.itemscroller.shulker.ShulkerRefillClient;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.*;
 
@@ -238,6 +239,14 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                     if (range.getSlotCount() < recipe.countRecipeItems())
                     {
                         InventoryUtils.bufferInvUpdates = false;
+                        return;
+                    }
+
+                    // Wait for a server-authoritative refill before normal mass-crafting clicks.
+                    if (ShulkerRefillClient.pauseMassCraft(mc, recipe))
+                    {
+                        InventoryUtils.bufferInvUpdates = false;
+                        this.massCraftTicker = 0;
                         return;
                     }
 

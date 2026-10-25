@@ -30,7 +30,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 //	compileOnly fabricApi.module("fabric-api-base", project.fabric_api_version)
-//	compileOnly fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)
+	implementation fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)
 //	compileOnly fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)
 	include(implementation("me.fallenbreath:conditional-mixin-fabric:${project.conditionalmixin_version}"))
 

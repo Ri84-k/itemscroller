@@ -1,46 +1,49 @@
 {
-	"schemaVersion": 1,
-	"id": "itemscroller",
-	"name": "Item Scroller",
-	"version": "${mod_version}",
-
-	"description": "Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots",
-	"authors": [
-		"masa"
-	],
-	"contributors": [
-		"Sakura-Ryoko"
-	],
-	"contact": {
-		"homepage": "https://www.curseforge.com/minecraft/mc-mods/item-scroller",
-		"issues": "https://github.com/maruohon/itemscroller/issues",
-		"sources": "https://github.com/maruohon/itemscroller",
-		"twitter": "https://twitter.com/maruohon",
-		"discord": "https://discordapp.com/channels/211786369951989762/453662800460644354/"
-	},
-
-	"license": "LGPLv3",
-	"icon": "assets/itemscroller/icon.png",
-	"environment": "client",
-	"entrypoints": {
-		"main": [
-			"fi.dy.masa.itemscroller.ItemScroller"
-		],
-		"modmenu": [
-			"fi.dy.masa.itemscroller.compat.modmenu.ModMenuImpl"
-		]
-	},
-
-	"mixins": [
-		"mixins.itemscroller.json"
-	],
-	"accessWidener": "itemscroller.accesswidener",
-
-	"depends": {
-		"minecraft": "~26.2-",
-		"malilib": ">=0.29.5- <0.30.0-"
-	},
-	"breaks": {
-		"malilib": "<0.29.5-"
-	}
+  "schemaVersion": 1,
+  "id": "itemscroller",
+  "name": "Item Scroller",
+  "version": "${mod_version}",
+  "description": "Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots",
+  "authors": [
+    "masa"
+  ],
+  "contributors": [
+    "Sakura-Ryoko"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/item-scroller",
+    "issues": "https://github.com/maruohon/itemscroller/issues",
+    "sources": "https://github.com/maruohon/itemscroller",
+    "twitter": "https://twitter.com/maruohon",
+    "discord": "https://discordapp.com/channels/211786369951989762/453662800460644354/"
+  },
+  "license": "LGPLv3",
+  "icon": "assets/itemscroller/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "fi.dy.masa.itemscroller.shulker.ShulkerRefillServer"
+    ],
+    "modmenu": [
+      "fi.dy.masa.itemscroller.compat.modmenu.ModMenuImpl"
+    ],
+    "client": [
+      "fi.dy.masa.itemscroller.ItemScroller"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "mixins.itemscroller.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "itemscroller.accesswidener",
+  "depends": {
+    "minecraft": "~26.2-",
+    "fabric-networking-api-v1": "*"
+  },
+  "breaks": {},
+  "recommends": {
+    "malilib": ">=0.29.6- <0.30.0-"
+  }
 }
