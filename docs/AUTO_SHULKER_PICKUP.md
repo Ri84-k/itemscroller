@@ -60,3 +60,11 @@ IMPORTANT: A passing Gradle build is not an in-game safety guarantee. Test on a 
 ## Lock hotkey and menu-slot correction (.8)
 
 The keybind is configured in **Item Scroller > Hotkeys > Toggle Shulker Lock** (default: **K**, inventory screens only). While hovering an empty or single-item-type shulker in *your own* inventory, press K once to lock (gold padlock), once again to unlock. Blue padlocks in global Fixed Mode are visual mode indicators; the actual persistent lock is gold. Mixed-item boxes refuse a lock request and show a status message. The lock request now sends the hovered slot's index within the open menu, **not** the backing inventory's local index (hotbar slots especially differ). Test both hotbar and main inventory slots, including inventory views inside a chest/crafting menu.
+
+## Tooltip and lock badge rendering correction (.9)
+
+- Inventory padlocks are now extracted after screen contents but **before** native and modded tooltip strata, avoiding yellow icons over preview text and item grids.
+- The noisy `Item Scroller Hotkeys > Toggle Shulker Lock` reminder is no longer added to every shulker tooltip. Manually locked boxes show just one short lock-status line; unlocked boxes preserve their usual tooltip.
+- The Auto Shulker Pickup and Toggle Shulker Lock config descriptions use proper newline escapes rather than visible literal backslash-n sequences.
+- The configurable lock hotkey (default K), packet validation, persistent locks and both pickup priority modes are unchanged.
+- Test with Shulker Box Tooltip, Quick Shulker and Simple Shulker Preview installed; hover ordinary, mixed and locked shulkers and confirm padlocks stay behind popups.
