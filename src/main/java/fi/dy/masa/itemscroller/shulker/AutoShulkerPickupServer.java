@@ -54,19 +54,19 @@ public final class AutoShulkerPickupServer
             if (AutoShulkerLocks.isLocked(updated))
             {
                 AutoShulkerLocks.setLock(updated, false, "");
-                player.displayClientMessage(Component.literal("Shulker unlocked: Overflow allowed"), true);
+                player.sendSystemMessage(Component.literal("Shulker unlocked: Overflow allowed"), true);
             }
             else
             {
                 String type = AutoShulkerLocks.singleType(updated);
                 if (type == null)
                 {
-                    player.displayClientMessage(
+                    player.sendSystemMessage(
                             Component.literal("Cannot lock mixed-item shulker; empty it or sort it first"), true);
                     return;
                 }
                 AutoShulkerLocks.setLock(updated, true, type);
-                player.displayClientMessage(Component.literal(type.isEmpty() ?
+                player.sendSystemMessage(Component.literal(type.isEmpty() ?
                         "Shulker locked: first picked-up item will assign its type" :
                         "Shulker locked to " + type), true);
             }
