@@ -35,12 +35,16 @@
     {
       "config": "mixins.itemscroller.json",
       "environment": "client"
+    },
+    {
+      "config": "mixins.itemscroller.server.json"
     }
   ],
   "accessWidener": "itemscroller.accesswidener",
   "depends": {
     "minecraft": "~26.2-",
-    "fabric-networking-api-v1": "*"
+    "fabric-networking-api-v1": "*",
+    "fabric-lifecycle-events-v1": "*"
   },
   "breaks": {},
   "recommends": {
