@@ -36,6 +36,15 @@ public abstract class MixinScreen
     private void itemscroller_onDrawScreenPost(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci)
     {
         RenderEventHandler.instance().onDrawScreenPost(GuiContext.fromGuiGraphics(graphics), this.minecraft, mouseX, mouseY);
+    }
+    @Inject(method = "extractRenderStateWithTooltipAndSubtitles", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+            shift = At.Shift.AFTER))
+    private void itemscroller_shulkerIconsBeforeTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci)
+    {
+        // Render the inventory padlocks after the screen's slots, but before
+        // deferred vanilla and modded item tooltips are extracted. Otherwise
+        // padlocks appear on top of shulker preview panels and tooltip text.
         ShulkerLockOverlay.render(graphics);
     }
 }
