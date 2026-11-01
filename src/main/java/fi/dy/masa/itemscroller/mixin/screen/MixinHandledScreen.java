@@ -54,7 +54,7 @@ public class MixinHandledScreen
         {
             lines.add(Component.literal("Global Fixed Mode: same item types only").withStyle(ChatFormatting.AQUA));
         }
-        lines.add(Component.literal("Ctrl+Alt+L while hovering in your inventory: Lock/Unlock")
+        lines.add(Component.literal("Item Scroller Hotkeys > Toggle Shulker Lock (default K)")
                 .withStyle(ChatFormatting.GRAY));
         cir.setReturnValue(lines);
     }

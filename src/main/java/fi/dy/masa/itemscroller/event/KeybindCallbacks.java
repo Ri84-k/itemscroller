@@ -26,6 +26,7 @@ import fi.dy.masa.itemscroller.mixin.recipe.IMixinCraftingResultSlot;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.RecipePattern;
 import fi.dy.masa.itemscroller.shulker.ShulkerRefillClient;
+import fi.dy.masa.itemscroller.shulker.AutoShulkerPickupClient;
 import fi.dy.masa.itemscroller.shulker.ShulkerGridClient;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.*;
@@ -107,6 +108,12 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 
         AbstractContainerScreen<?> gui = (AbstractContainerScreen<?>) GuiUtils.getCurrentScreen();
         Slot slot = AccessorUtils.getSlotUnderMouse(gui);
+        if (key == Hotkeys.TOGGLE_SHULKER_LOCK.getKeybind())
+        {
+            // The binding is user-configurable (default K) and GUI-only.
+            // The client sends a request, and the server validates the slot.
+            return AutoShulkerPickupClient.toggleLock(mc, slot);
+        }
         RecipeStorage recipes = RecipeStorage.getInstance();
         MoveAction moveAction = InputUtils.getDragMoveAction(key);
 

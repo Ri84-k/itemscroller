@@ -18,7 +18,6 @@ import net.minecraft.world.phys.HitResult;
 import fi.dy.masa.itemscroller.Reference;
 import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.config.Hotkeys;
-import fi.dy.masa.itemscroller.shulker.AutoShulkerPickupClient;
 import fi.dy.masa.itemscroller.recipes.RecipeStorage;
 import fi.dy.masa.itemscroller.util.*;
 import fi.dy.masa.itemscroller.villager.VillagerDataStorage;
@@ -50,18 +49,6 @@ public class InputHandler implements IKeybindProvider, IKeyboardInputHandler, IM
     @Override
     public boolean onKeyInput(KeyEvent input, boolean eventKeyState)
     {
-        // Hold Ctrl+Alt and press L while hovering a carried shulker to
-        // toggle its persistent single-item-type lock.
-        if (eventKeyState && input.key() == GLFW.GLFW_KEY_L &&
-                input.hasControlDown() && input.hasAltDown())
-        {
-            Minecraft client = Minecraft.getInstance();
-            if (client.gui.screen() instanceof AbstractContainerScreen<?> screen &&
-                    AutoShulkerPickupClient.toggleLock(client, AccessorUtils.getSlotUnderMouse(screen)))
-            {
-                return true;
-            }
-        }
         if (InputUtils.isRecipeViewOpen() && eventKeyState)
         {
             int index = -1;

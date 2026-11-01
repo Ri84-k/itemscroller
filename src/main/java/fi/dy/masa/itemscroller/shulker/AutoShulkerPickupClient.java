@@ -49,8 +49,13 @@ public final class AutoShulkerPickupClient
                 !AutoShulkerLocks.isShulker(hovered.getItem()) ||
                 !ClientPlayNetworking.canSend(AutoShulkerPickupPackets.LockBox.TYPE)) return false;
 
+        // Slot.index is an inventory-local index, which differs from the
+        // menu slot ID (especially in the hotbar and chest/crafting screens).
+        // The server expects the menu ID, not the inventory-local index.
+        int menuSlotId = client.player.containerMenu.slots.indexOf(hovered);
+        if (menuSlotId < 0) return false;
         ClientPlayNetworking.send(new AutoShulkerPickupPackets.LockBox(
-                client.player.containerMenu.containerId, hovered.index));
+                client.player.containerMenu.containerId, menuSlotId));
         return true;
     }
 

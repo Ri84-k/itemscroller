@@ -203,7 +203,10 @@
   "itemscroller.config.generic.comment.autoShulkerPickup": "Store ground pickups and Carpet direct mining drops\\nin carried shulkers. The pickup mode below decides\\nwhether item types may be mixed. Fake players excluded.",
   "itemscroller.config.generic.name.autoShulkerPickupMode": "autoShulkerPickupMode",
   "itemscroller.config.generic.prettyName.autoShulkerPickupMode": "Auto Shulker Pickup Mode",
-  "itemscroller.config.generic.comment.autoShulkerPickupMode": "OVERFLOW: matching stacks, matching boxes, partly\\nfilled boxes, then empty boxes. FIXED: each new item\\ntype gets its own empty shulker; never mix new types.\\nCtrl+Alt+L over a shulker toggles its persistent lock.\\nGold padlock = manually locked; blue = global Fixed.",
+  "itemscroller.config.generic.comment.autoShulkerPickupMode": "OVERFLOW: matching stacks, matching boxes, partly\\nfilled boxes, then empty boxes. FIXED: each new item\\ntype gets its own empty shulker; never mix new types.\\nSet Toggle Shulker Lock hotkey in Hotkeys (default K).\\nGold padlock = manually locked; blue = global Fixed.",
   "itemscroller.gui.label.auto_shulker_mode.overflow": "Overflow (mixed storage)",
-  "itemscroller.gui.label.auto_shulker_mode.fixed": "Fixed (separate item types)"
+  "itemscroller.gui.label.auto_shulker_mode.fixed": "Fixed (separate item types)",
+  "itemscroller.config.hotkeys.name.toggleShulkerLock": "toggleShulkerLock",
+  "itemscroller.config.hotkeys.prettyName.toggleShulkerLock": "Toggle Shulker Lock",
+  "itemscroller.config.hotkeys.comment.toggleShulkerLock": "Hover over a shulker box in your own inventory\\nand press this key to lock or unlock it.\\nDefault: K. Change the key in Item Scroller > Hotkeys.\\nGold padlock = manually locked; blue = global Fixed mode."
 }
