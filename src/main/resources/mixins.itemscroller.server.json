@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "fi.dy.masa.itemscroller.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "shulker.MixinItemEntity"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
