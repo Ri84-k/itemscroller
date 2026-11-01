@@ -6,28 +6,28 @@ import java.util.List;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
 
-/** Stores world pickups in carried shulkers, reusing partial boxes before empty boxes. */
+/** Routes normal ground pickups and Carpet Org's immediate mining drops. */
 public final class AutoShulkerPickup
 {
     private AutoShulkerPickup() {}
 
     /**
-     * Consumes only the amount actually inserted. The caller passes the same
-     * mutable stack that vanilla would attempt to add to the player inventory.
-     * Vanilla handles any remainder normally.
+     * OVERFLOW: matching stacks -> matching boxes -> other partially used
+     * boxes -> completely empty boxes -> vanilla inventory.
+     * FIXED: matching boxes -> unused empty boxes -> vanilla inventory.
+     * A manually locked box rejects every other item type in both modes.
      */
     public static int store(ServerPlayer player, ItemStack incoming)
     {
         if (!AutoShulkerPickupServer.isEnabled(player) || incoming.isEmpty() ||
                 !incoming.getItem().canFitInsideContainerItems()) return 0;
 
-        // Work on copies, then write back only changed shulker stacks. Armor
-        // slots are excluded; 40 is the offhand in this Minecraft version.
+        boolean fixedMode = AutoShulkerPickupServer.isFixedMode(player);
+        String type = AutoShulkerLocks.itemType(incoming.getItem());
+
         List<Box> matching = new ArrayList<>();
         List<Box> partial = new ArrayList<>();
         List<Box> empty = new ArrayList<>();
@@ -36,8 +36,8 @@ public final class AutoShulkerPickup
         {
             if (index >= 36 && index != 40) continue;
             ItemStack carried = player.getInventory().getItem(index);
-            if (carried.getCount() != 1 || !(carried.getItem() instanceof BlockItem block) ||
-                    !(block.getBlock() instanceof ShulkerBoxBlock)) continue;
+            if (!AutoShulkerLocks.isShulker(carried) ||
+                    !AutoShulkerLocks.accepts(carried, incoming)) continue;
 
             NonNullList<ItemStack> slots = NonNullList.withSize(27, ItemStack.EMPTY);
             ItemContainerContents contents = carried.get(DataComponents.CONTAINER);
@@ -48,30 +48,48 @@ public final class AutoShulkerPickup
             for (ItemStack stored : slots)
             {
                 if (stored.isEmpty()) continue;
-                if (ItemStack.isSameItemSameComponents(stored, incoming)) hasMatch = true;
+                if (AutoShulkerLocks.itemType(stored.getItem()).equals(type)) hasMatch = true;
                 else hasOther = true;
             }
 
-            Box candidate = new Box(index, carried.copy(), slots);
-            if (hasMatch) matching.add(candidate);
-            else if (hasOther) partial.add(candidate);
-            else empty.add(candidate);
-            // Partially filled boxes with unrelated items are valid fallback storage.
+            Box candidate = new Box(index, carried.copy(), slots, type);
+            String assigned = AutoShulkerLocks.lockedType(carried);
+
+            // An explicitly locked box assigned to this type is a matching
+            // destination, even if currently empty.
+            if (hasMatch || (!assigned.isEmpty() && assigned.equals(type)))
+            {
+                matching.add(candidate);
+            }
+            else if (hasOther)
+            {
+                // Fixed Mode never introduces new item types into used boxes.
+                // Overflow uses other boxes only if they are not manually locked.
+                if (!fixedMode && !AutoShulkerLocks.isLocked(carried))
+                    partial.add(candidate);
+            }
+            else
+            {
+                // Entirely empty box: in Fixed Mode it becomes assigned to
+                // this type by its first inserted item. In Overflow it is
+                // used only after all partially filled boxes.
+                empty.add(candidate);
+            }
         }
 
         int originalCount = incoming.getCount();
 
-        // First top off matching stacks, across all matching boxes.
+        // Matching stacks are filled everywhere before adding a new stack.
         for (Box box : matching) fillExistingStacks(box, incoming);
-
-        // Then use vacant slots in boxes that already hold this item.
         for (Box box : matching) fillEmptySlots(box, incoming);
 
-        // Reuse free space in carried boxes with other items before taking
-        // up an entirely empty shulker. Existing items are never replaced.
-        for (Box box : partial) fillEmptySlots(box, incoming);
+        // Only Overflow Mode uses unrelated partially filled shulkers.
+        if (!fixedMode)
+        {
+            for (Box box : partial) fillEmptySlots(box, incoming);
+        }
 
-        // Only after using partially filled boxes, start a fresh shulker.
+        // Both modes prefer filling existing boxes over opening an empty one.
         for (Box box : empty) fillEmptySlots(box, incoming);
 
         for (Box box : matching) commit(player, box);
@@ -94,10 +112,9 @@ public final class AutoShulkerPickup
         {
             ItemStack stored = box.slots.get(slot);
             if (stored.isEmpty() || !ItemStack.isSameItemSameComponents(stored, incoming)) continue;
-
             int capacity = Math.max(0, stored.getMaxStackSize() - stored.getCount());
             int amount = Math.min(incoming.getCount(), capacity);
-            if (amount == 0) continue;
+            if (amount <= 0) continue;
 
             ItemStack expanded = stored.copy();
             expanded.grow(amount);
@@ -125,6 +142,11 @@ public final class AutoShulkerPickup
     {
         if (!box.changed) return;
         box.stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(box.slots));
+        if (AutoShulkerLocks.isLocked(box.stack) && AutoShulkerLocks.lockedType(box.stack).isEmpty())
+        {
+            // Reserve the item type permanently on the first insertion.
+            AutoShulkerLocks.setLock(box.stack, true, box.incomingType);
+        }
         player.getInventory().setItem(box.index, box.stack);
     }
 
@@ -133,13 +155,15 @@ public final class AutoShulkerPickup
         final int index;
         final ItemStack stack;
         final NonNullList<ItemStack> slots;
+        final String incomingType;
         boolean changed;
 
-        Box(int index, ItemStack stack, NonNullList<ItemStack> slots)
+        Box(int index, ItemStack stack, NonNullList<ItemStack> slots, String incomingType)
         {
             this.index = index;
             this.stack = stack;
             this.slots = slots;
+            this.incomingType = incomingType;
         }
     }
 }

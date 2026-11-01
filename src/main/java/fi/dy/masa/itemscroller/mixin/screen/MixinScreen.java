@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.itemscroller.event.RenderEventHandler;
+import fi.dy.masa.itemscroller.shulker.ShulkerLockOverlay;
 
 @Mixin(Screen.class)
 public abstract class MixinScreen
@@ -35,5 +36,6 @@ public abstract class MixinScreen
     private void itemscroller_onDrawScreenPost(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci)
     {
         RenderEventHandler.instance().onDrawScreenPost(GuiContext.fromGuiGraphics(graphics), this.minecraft, mouseX, mouseY);
+        ShulkerLockOverlay.render(graphics);
     }
 }
