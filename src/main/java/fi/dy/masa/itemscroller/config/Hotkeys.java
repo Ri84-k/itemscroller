@@ -16,6 +16,8 @@ public class Hotkeys
     private static final String HOTKEYS_KEY = Reference.MOD_ID+".config.hotkeys";
 
     public static final ConfigHotkey OPEN_CONFIG_GUI            = new ConfigHotkey("openConfigGui",         "I,C").apply(HOTKEYS_KEY);
+    // Only active while an inventory GUI is open; change this in Hotkeys.
+    public static final ConfigHotkey TOGGLE_SHULKER_LOCK       = new ConfigHotkey("toggleShulkerLock",    "K", GUI_NO_ORDER).apply(HOTKEYS_KEY);
 
     public static final ConfigHotkey CRAFT_EVERYTHING           = new ConfigHotkey("craftEverything",       "LEFT_CONTROL,C", GUI_NO_ORDER).apply(HOTKEYS_KEY);
     public static final ConfigHotkey DROP_ALL_MATCHING          = new ConfigHotkey("dropAllMatching",       "LEFT_CONTROL,LEFT_SHIFT,Q", GUI_NO_ORDER).apply(HOTKEYS_KEY);
@@ -58,6 +60,7 @@ public class Hotkeys
 
     public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(
             OPEN_CONFIG_GUI,
+            TOGGLE_SHULKER_LOCK,
             TOGGLE_MOD_ON_OFF,
 
             CRAFT_EVERYTHING,
