@@ -6,6 +6,7 @@ This feature is part of Item Scroller, **not a separate mod**.
 
 - `autoShulkerPickup` is a Generic config boolean, **ON by default**.
 - On a real player's ground-item pickup, the integrated server attempts to put the item into a carried shulker **before** vanilla inventory insertion, even if normal inventory slots are free.
+- Carpet Org Addition 26.2 compatibility: when `blockDropsDirectlyEnterInventory` routes mined blocks straight to `Inventory.add`, the same shulker-first behavior applies to the scoped block-breaking player's drops.
 - First fill matching stacks in shulkers that already contain the item, then empty slots in those matching shulkers, then vacant slots in shulkers with other items, then completely empty shulkers.
 - Existing items are never removed, converted, or overwritten; only free slots can receive a new item type.
 - The original item stack's components (e.g. name, enchantments, damage) must match when combining stacks.
@@ -13,6 +14,7 @@ This feature is part of Item Scroller, **not a separate mod**.
 - Shulker boxes and other items which forbid nested storage are never inserted into shulkers.
 - Carpet/GCA fake players are excluded: only a plain `ServerPlayer` class is eligible. Fake players normally subclass `ServerPlayer`.
 - The client sends its current toggle value to the integrated server at connection time and whenever it changes. Disabling the toggle restores vanilla pickup behavior.
+- The direct-drop compatibility uses Carpet Org Addition's `BLOCK_BREAKER` scoped value (via optional reflection) and does not intercept unrelated `Inventory.add` calls. It gracefully no-ops when Carpet Org Addition is absent.
 
 ## Where to change it
 
@@ -29,6 +31,11 @@ Open Item Scroller's config -> Generic -> `autoShulkerPickup`. The saved config 
 7. **Non-nesting**: picking up a shulker never inserts it inside another.
 8. **Toggle**: switch `autoShulkerPickup` off in config and pick up cobblestone; normal inventory receives it. Re-enable to resume shulker storage.
 9. **Fake player**: spawn a GCA/Carpet fake player carrying an empty shulker; it must use vanilla pickup instead.
-10. **Regression**: keep `ShulkerBoxItemHandling` and `directShulkerCrafting` enabled and confirm mass craft/refill still works.
+10. **Carpet direct drops**: enable `/carpet blockDropsDirectlyEnterInventory true`, carry a partially filled shulker, then mine or excavate a block. Its drops should appear inside the shulker **without ever touching the ground**.
+11. **Carpet overflow**: fill all carried shulkers, mine another block, and check that the remainder enters normal inventory without duplication or lost items.
+12. **Direct-drop toggle**: turn `autoShulkerPickup` off with Carpet's direct-drop rule still on, then mine a block. Its drops should go to normal inventory.
+13. **Unrelated inventory additions**: with Carpet's rule on and shulker available, use `/give` and ordinary crafting. Both must still put their outputs in regular inventory.
+14. **Normal pickup**: with Carpet's direct-drop rule turned off, ground-item pickup must still route into shulkers.
+15. **Regression**: keep `ShulkerBoxItemHandling` and `directShulkerCrafting` enabled and confirm mass craft/refill still works.
 
 Note: source compilation is not a substitute for launching the game and checking the pickup/discard path; test the scenarios above before relying on the feature in a valuable world. Back up the world first.
