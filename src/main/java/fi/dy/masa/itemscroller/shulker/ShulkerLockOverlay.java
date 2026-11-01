@@ -35,18 +35,20 @@ public final class ShulkerLockOverlay
             boolean manual = AutoShulkerLocks.isLocked(shulker);
             if (!manual && !fixed) continue;
 
-            int x = left + slot.x + 9;
-            int y = top + slot.y + 6;
+            // Top-right of the item slot, away from vanilla stack counts
+            // drawn in the bottom-right corner of each 16x16 icon.
+            int x = left + slot.x + 10;
+            int y = top + slot.y;
             int color = manual ? 0xFFFFCB4C : 0xFF8DD6FF;
 
-            // Tiny 7x9-pixel padlock with a shadow for legibility over
-            // different colored shulker icons. No texture asset required.
-            graphics.fill(x, y, x + 7, y + 9, 0xD0101820);
-            graphics.fill(x + 2, y + 1, x + 5, y + 2, color);
+            // Small 6x8-pixel padlock; tooltip/preview strata render after
+            // the inventory layer and cover these badges as expected.
+            graphics.fill(x, y, x + 6, y + 8, 0xD0101820);
+            graphics.fill(x + 2, y + 1, x + 4, y + 2, color);
             graphics.fill(x + 1, y + 2, x + 2, y + 5, color);
-            graphics.fill(x + 5, y + 2, x + 6, y + 5, color);
-            graphics.fill(x + 1, y + 4, x + 6, y + 8, color);
-            graphics.fill(x + 3, y + 5, x + 4, y + 7, 0xFF27313B);
+            graphics.fill(x + 4, y + 2, x + 5, y + 5, color);
+            graphics.fill(x + 1, y + 4, x + 5, y + 7, color);
+            graphics.fill(x + 2, y + 5, x + 3, y + 6, 0xFF27313B);
         }
     }
 }
