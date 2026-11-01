@@ -7,7 +7,10 @@ This feature is part of Item Scroller, **not a separate mod**.
 - `autoShulkerPickup` is a Generic config boolean, **ON by default**.
 - On a real player's ground-item pickup, the integrated server attempts to put the item into a carried shulker **before** vanilla inventory insertion, even if normal inventory slots are free.
 - Carpet Org Addition 26.2 compatibility: when `blockDropsDirectlyEnterInventory` routes mined blocks straight to `Inventory.add`, the same shulker-first behavior applies to the scoped block-breaking player's drops.
-- First fill matching stacks in shulkers that already contain the item, then empty slots in those matching shulkers, then vacant slots in shulkers with other items, then completely empty shulkers.
+- Storage mode is `autoShulkerPickupMode`, **OVERFLOW by default**:
+  - **OVERFLOW**: fill matching stacks (up to maximum stack size); then free slots in matching boxes; then partially filled unrelated boxes; then empty boxes; finally normal inventory. Each box is reused before an empty one.
+  - **FIXED**: use existing boxes containing that item type first (including matching stacks and empty slots); if there is no capacity, open an empty box for that type; **never add a new item type to a partially filled box**; finally normal inventory.
+- **Per-shulker locks**: hover a shulker in your player inventory and press **Ctrl+Alt+L**. Gold padlock = explicitly locked, blue padlock = global Fixed Mode. Lock metadata stays on that shulker item when you move it. An empty box locked manually automatically assigns the type of the first item that gets stored; a nonempty box can be locked only if it contains one item type. Unlock to permit mixed items again in Overflow Mode. Locks are enforced in both modes.
 - Existing items are never removed, converted, or overwritten; only free slots can receive a new item type.
 - The original item stack's components (e.g. name, enchantments, damage) must match when combining stacks.
 - If all eligible shulkers are full, vanilla inventory pickup handles the entire remainder. If normal inventory also cannot accept it, the remainder stays on the ground.
@@ -18,7 +21,7 @@ This feature is part of Item Scroller, **not a separate mod**.
 
 ## Where to change it
 
-Open Item Scroller's config -> Generic -> `autoShulkerPickup`. The saved config also contains `Generic.autoShulkerPickup` under `config/itemscroller.json`.
+Open Item Scroller's config -> Generic -> `autoShulkerPickup` and `autoShulkerPickupMode`. The saved config contains `Generic.autoShulkerPickup` and `Generic.autoShulkerPickupMode` in `config/itemscroller.json`. Hold **Ctrl+Alt+L** over a player-owned shulker in the inventory to lock/unlock it. This setting is client-synchronized to the server, where all box mutations are performed.
 
 ## Manual checks after `./gradlew build`
 
@@ -39,3 +42,16 @@ Open Item Scroller's config -> Generic -> `autoShulkerPickup`. The saved config 
 15. **Regression**: keep `ShulkerBoxItemHandling` and `directShulkerCrafting` enabled and confirm mass craft/refill still works.
 
 Note: source compilation is not a substitute for launching the game and checking the pickup/discard path; test the scenarios above before relying on the feature in a valuable world. Back up the world first.
+
+## New mode / lock tests (.7)
+
+16. **Overflow baseline:** carry A (partly filled with cobblestone), B and C empty. Pick up dirt, stone, and more cobblestone. Both new item types should share A's empty slots; cobblestone first fills A's existing stack. B and C stay unused until A is full.
+17. **Fixed three item types:** carry three empty boxes A, B, C and pick up 3 cobblestone, 3 stone and 3 dirt. A, B and C should each have a different single item type. Picking up another 3 of each should return to its matching box.
+18. **Fixed capacity overflow:** fill the matching fixed-type box, then add more of that type. Use the next empty shulker; do NOT use a partly filled box of another item type. With no empty box, send the extra items to regular inventory.
+19. **Manual lock in Overflow:** lock a stone-only shulker with Ctrl+Alt+L; confirm gold padlock and matching tooltip. Dirt must not be routed into that shulker even if it has empty slots. Other unlocked boxes remain eligible.
+20. **Empty lock:** lock an empty box, pick up 3 dirt, then pick up 3 stone. The box should be assigned permanently to dirt, refusing stone. Unlock it and confirm the gold padlock disappears.
+21. **Mixed-item lock refusal:** attempt Ctrl+Alt+L on a shulker that already holds cobblestone and dirt; it must refuse the lock and preserve all contents.
+22. **Carpet direct drops:** repeat Overflow and Fixed tests with `/carpet blockDropsDirectlyEnterInventory true`; items broken by the player must follow the same routing priorities.
+23. **No regressions:** /give and crafting must still go to normal inventory; toggling pickup OFF must fully bypass shulker routing; fake players must not use the feature; existing directShulkerCrafting must remain unchanged.
+
+IMPORTANT: A passing Gradle build is not an in-game safety guarantee. Test on a backed-up world before using this experimental version.
