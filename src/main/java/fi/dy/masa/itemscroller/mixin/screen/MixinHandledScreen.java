@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fi.dy.masa.itemscroller.util.InventoryUtils;
 import fi.dy.masa.itemscroller.shulker.AutoShulkerLocks;
-import fi.dy.masa.itemscroller.shulker.AutoShulkerStorageMode;
-import fi.dy.masa.itemscroller.config.Configs;
 import fi.dy.masa.itemscroller.villager.VillagerDataStorage;
 
 @Mixin(AbstractContainerScreen.class)
@@ -42,20 +40,14 @@ public class MixinHandledScreen
             at = @At("RETURN"), cancellable = true)
     private void itemscroller_shulkerLockHint(ItemStack stack, CallbackInfoReturnable<List<Component>> cir)
     {
-        if (!AutoShulkerLocks.isShulker(stack)) return;
+        // Keep native / third-party shulker previews uncluttered. The gold
+        // lock icon already indicates the manual state in inventory slots.
+        // Append one brief line only to boxes explicitly locked by the user.
+        if (!AutoShulkerLocks.isLocked(stack)) return;
         List<Component> lines = new ArrayList<>(cir.getReturnValue());
-        if (AutoShulkerLocks.isLocked(stack))
-        {
-            String type = AutoShulkerLocks.lockedType(stack);
-            lines.add(Component.literal(type.isEmpty() ? "Locked: assigns first picked-up item" :
-                    "Locked to " + type).withStyle(ChatFormatting.GOLD));
-        }
-        else if (Configs.Generic.AUTO_SHULKER_PICKUP_MODE.getOptionListValue() == AutoShulkerStorageMode.FIXED)
-        {
-            lines.add(Component.literal("Global Fixed Mode: same item types only").withStyle(ChatFormatting.AQUA));
-        }
-        lines.add(Component.literal("Item Scroller Hotkeys > Toggle Shulker Lock (default K)")
-                .withStyle(ChatFormatting.GRAY));
+        String type = AutoShulkerLocks.lockedType(stack);
+        lines.add(Component.literal(type.isEmpty() ? "Item Scroller: Locked (unassigned)" :
+                "Item Scroller: Locked to " + type).withStyle(ChatFormatting.GOLD));
         cir.setReturnValue(lines);
     }
 }
