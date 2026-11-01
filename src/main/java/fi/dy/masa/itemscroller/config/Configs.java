@@ -60,6 +60,7 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean MASS_CRAFT_SWAPS                      = new ConfigBoolean("massCraftSwapsOnly",                      false).apply(GENERIC_KEY);
         public static final ConfigBoolean SHULKER_BOX_ITEM_HANDLING = new ConfigBoolean("ShulkerBoxItemHandling", false).apply(GENERIC_KEY);
         public static final ConfigBoolean DIRECT_SHULKER_CRAFTING = new ConfigBoolean("directShulkerCrafting", false).apply(GENERIC_KEY);
+        public static final ConfigBoolean AUTO_SHULKER_PICKUP = new ConfigBoolean("autoShulkerPickup", true).apply(GENERIC_KEY);
         public static final ConfigBoolean MASS_CRAFT_RECIPE_BOOK                = new ConfigBoolean("massCraftUseRecipeBook",                  true).apply(GENERIC_KEY);
         public static final ConfigBoolean MASS_CRAFT_HOLD                       = new ConfigBoolean("massCraftHold",                           false).apply(GENERIC_KEY);
         public static final ConfigInteger PACKET_RATE_LIMIT                     = new ConfigInteger("packetRateLimit",                         4, 1, 1024).apply(GENERIC_KEY);
@@ -99,6 +100,7 @@ public class Configs implements IConfigHandler
                 MASS_CRAFT_RECIPE_BOOK,
                 SHULKER_BOX_ITEM_HANDLING,
                 DIRECT_SHULKER_CRAFTING,
+                AUTO_SHULKER_PICKUP,
                 MASS_CRAFT_HOLD,
                 MOD_MAIN_TOGGLE,
                 PACKET_RATE_LIMIT,
