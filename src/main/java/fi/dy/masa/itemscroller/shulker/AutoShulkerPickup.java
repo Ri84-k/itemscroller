@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 
-/** Stores world pickups in carried shulkers, matching contents before empty boxes. */
+/** Stores world pickups in carried shulkers, reusing partial boxes before empty boxes. */
 public final class AutoShulkerPickup
 {
     private AutoShulkerPickup() {}
@@ -29,6 +29,7 @@ public final class AutoShulkerPickup
         // Work on copies, then write back only changed shulker stacks. Armor
         // slots are excluded; 40 is the offhand in this Minecraft version.
         List<Box> matching = new ArrayList<>();
+        List<Box> partial = new ArrayList<>();
         List<Box> empty = new ArrayList<>();
 
         for (int index = 0; index < player.getInventory().getContainerSize(); index++)
@@ -53,8 +54,9 @@ public final class AutoShulkerPickup
 
             Box candidate = new Box(index, carried.copy(), slots);
             if (hasMatch) matching.add(candidate);
-            else if (!hasOther) empty.add(candidate);
-            // Boxes with unrelated contents are left alone.
+            else if (hasOther) partial.add(candidate);
+            else empty.add(candidate);
+            // Partially filled boxes with unrelated items are valid fallback storage.
         }
 
         int originalCount = incoming.getCount();
@@ -65,10 +67,15 @@ public final class AutoShulkerPickup
         // Then use vacant slots in boxes that already hold this item.
         for (Box box : matching) fillEmptySlots(box, incoming);
 
-        // Finally place remaining items into entirely empty shulker boxes.
+        // Reuse free space in carried boxes with other items before taking
+        // up an entirely empty shulker. Existing items are never replaced.
+        for (Box box : partial) fillEmptySlots(box, incoming);
+
+        // Only after using partially filled boxes, start a fresh shulker.
         for (Box box : empty) fillEmptySlots(box, incoming);
 
         for (Box box : matching) commit(player, box);
+        for (Box box : partial) commit(player, box);
         for (Box box : empty) commit(player, box);
 
         int moved = originalCount - incoming.getCount();
