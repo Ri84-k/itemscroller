@@ -200,5 +200,5 @@
     "itemscroller.config.generic.comment.directShulkerCrafting": "EXPERIMENTAL (v3). Craft using carried shulker items\nwithout needing free player inventory slots.\nRequires ShulkerBoxItemHandling. Default: OFF.",
     "itemscroller.config.generic.name.autoShulkerPickup": "autoShulkerPickup",
     "itemscroller.config.generic.prettyName.autoShulkerPickup": "Auto Shulker Pickup",
-    "itemscroller.config.generic.comment.autoShulkerPickup": "Store picked-up items in shulker boxes you carry.\nPriority: matching stacks, then matching shulkers,\nthen other partly filled shulkers, then empty ones.\nRemaining items enter your normal inventory.\nCarpet/GCA fake players are excluded."
+    "itemscroller.config.generic.comment.autoShulkerPickup": "Store picked-up and Carpet-direct mining drops\nin shulker boxes you carry. Priority: matching\nstacks, then matching boxes, partly filled boxes,\nand finally empty boxes. Overflow goes to inventory.\nCarpet/GCA fake players are excluded."
 }
