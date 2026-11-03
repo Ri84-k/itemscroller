@@ -68,3 +68,12 @@ The keybind is configured in **Item Scroller > Hotkeys > Toggle Shulker Lock** (
 - The Auto Shulker Pickup and Toggle Shulker Lock config descriptions use proper newline escapes rather than visible literal backslash-n sequences.
 - The configurable lock hotkey (default K), packet validation, persistent locks and both pickup priority modes are unchanged.
 - Test with Shulker Box Tooltip, Quick Shulker and Simple Shulker Preview installed; hover ordinary, mixed and locked shulkers and confirm padlocks stay behind popups.
+
+## Lock visibility and green match overlay (.10)
+
+- **Gold manual locks display in chest, barrel, hopper, shulker and other standard container menus**, not just the player's inventory. The lock metadata remains attached to the item stack when moved between inventories; this fix changes only the visual overlay. Lock/unlock requests remain restricted to the player's inventory.
+- **Blue Fixed Mode indicators display only on carried shulkers**, because the global pickup mode doesn't apply to boxes in external storage.
+- New Generic option `autoShulkerLockMatchHighlight` (default true): when hovering a shulker, the mod complements existing matching-item highlights in translucent green **only** for matching boxes whose manual-lock states differ. It matches shulkers with the same block-item type, or boxes with different colors containing exclusively the same item type. The feature does not change ItemStack equality or compatibility with other mods' sorting rules. Disable this option if you'd rather leave all green highlighting to another mod.
+- Test a manually locked box in player inventory, move it into a chest, reopen chest and confirm the gold lock icon and brief locked-state tooltip persist; then move it back and ensure the lock still restricts Auto Shulker Pickup.
+- With identical shulker boxes in different lock states, hover either one to verify green matching. With different colors but the same single contained item type, verify the overlay is applied; unrelated boxes should remain unchanged.
+- Test hover previews to ensure padlocks remain behind tooltip layers. **No world tick, pickup priority, or networking logic was altered.**

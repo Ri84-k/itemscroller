@@ -208,5 +208,8 @@
   "itemscroller.gui.label.auto_shulker_mode.fixed": "Fixed (separate item types)",
   "itemscroller.config.hotkeys.name.toggleShulkerLock": "toggleShulkerLock",
   "itemscroller.config.hotkeys.prettyName.toggleShulkerLock": "Toggle Shulker Lock",
-  "itemscroller.config.hotkeys.comment.toggleShulkerLock": "Hover over a shulker box in your own inventory\nand press this key to lock or unlock it.\nDefault: K. Change the key in Item Scroller > Hotkeys.\nGold padlock = manually locked; blue = global Fixed mode."
+  "itemscroller.config.hotkeys.comment.toggleShulkerLock": "Hover over a shulker box in your own inventory\nand press this key to lock or unlock it.\nDefault: K. Change the key in Item Scroller > Hotkeys.\nGold padlock = manually locked; blue = global Fixed mode.",
+  "itemscroller.config.generic.name.autoShulkerLockMatchHighlight": "autoShulkerLockMatchHighlight",
+  "itemscroller.config.generic.prettyName.autoShulkerLockMatchHighlight": "Highlight Locked Shulker Matches",
+  "itemscroller.config.generic.comment.autoShulkerLockMatchHighlight": "Highlight matching shulker boxes in green when their\nmanual lock tags differ. Matches the same shulker item\nor single-item-type contents. Visual only; does not\nchange stacking, sorting or lock behavior. Default: ON."
 }
